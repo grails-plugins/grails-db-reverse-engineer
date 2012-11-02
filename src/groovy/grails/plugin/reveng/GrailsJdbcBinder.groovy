@@ -56,7 +56,7 @@ class GrailsJdbcBinder extends JDBCBinder {
 		JDBCReader reader = new JDBCReader(mdd, settings.connectionProvider, settings.getSQLExceptionConverter(),
 				settings.defaultCatalogName, settings.defaultSchemaName, revengStrategy)
 
-		DatabaseCollector dbs = new MappingsDatabaseCollector(mappings)
+		DatabaseCollector dbs = new MappingsDatabaseCollector(mappings, mdd)
 		reader.readDatabaseSchema dbs, catalog, schema, new ReverseEngineerProgressListener()
 		dbs
 	}

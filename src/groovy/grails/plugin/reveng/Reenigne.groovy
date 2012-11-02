@@ -38,6 +38,7 @@ class Reenigne {
 	String defaultSchema
 	String defaultCatalog
 
+	boolean applyHibernateValidatorToDdl = false
 	boolean preferBasicCompositeIds = true
 	boolean detectOneToOne = true
 	boolean detectManyToMany = true
@@ -98,6 +99,8 @@ class Reenigne {
 		if (defaultCatalog) {
 			properties.put Environment.DEFAULT_CATALOG, defaultCatalog
 		}
+		
+		properties.put("hibernate.validator.apply_to_ddl", applyHibernateValidatorToDdl.toString())
 
 		configuration.setProperties(properties)
 
