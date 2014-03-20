@@ -178,7 +178,12 @@ class GrailsEntityPOJOClass extends EntityPOJOClass {
 //			return tableDef.toString()
 //		}
 
-		''
+        	StringBuilder buf = new StringBuilder()
+        	getAllPropertiesIterator().each { Property property ->
+            		buf.append("\t\t${property.name} column:'${property.name}'\n".toString());
+        	}
+
+		buf.toString()
 	}
 
 	@Override
