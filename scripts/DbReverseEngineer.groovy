@@ -75,6 +75,9 @@ protected  Map buildMergedConfig() {
 	else {
 		mergedConfig.overwriteExisting = true
 	}
+	if (revengConfig.addRestAnnotation) {
+		mergedConfig.addRestAnnotation = revengConfig.addRestAnnotation
+	}
 
 	if (revengConfig.alwaysMapManyToManyTables instanceof Boolean) {
 		mergedConfig.alwaysMapManyToManyTables = revengConfig.alwaysMapManyToManyTables
