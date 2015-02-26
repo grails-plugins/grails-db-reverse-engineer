@@ -14,7 +14,10 @@
  */
 package grails.plugin.reveng
 
+import java.beans.Introspector
+
 import org.hibernate.cfg.Configuration
+import org.hibernate.cfg.reveng.ReverseEngineeringStrategyUtil
 import org.hibernate.mapping.Column
 import org.hibernate.mapping.ForeignKey
 import org.hibernate.mapping.ManyToOne
@@ -320,7 +323,7 @@ class GrailsEntityPOJOClass extends EntityPOJOClass {
 				clazz.table.uniqueKeyIterator.each { UniqueKey key ->
 					if (key.columnSpan == 1 || key.name == clazz.table.primaryKey?.name) return
 					if (key.columns[-1] == column) {
-						def otherNames = key.columns[0..-2].collect { "\"$it.name\"" }
+						def otherNames = key.columns[0..-2].collect { "\"${propertyNameForColumn(it)}\"" }
 						values.unique = '[' + otherNames.reverse().join(', ') + ']'
 					}
 				}
@@ -339,6 +342,19 @@ class GrailsEntityPOJOClass extends EntityPOJOClass {
 		}
 
 		constraints.length() ? "\tstatic constraints = {$newline$constraints\t}" : ''
+	}
+
+	String propertyNameForColumn(Column column) {
+		def finder = { Property property ->
+			Column propColumn = property.columnIterator.next()
+			propColumn == column
+		}
+
+		def columnProperty = getAllPropertiesIterator().find(finder)
+
+		if (!columnProperty) { columnProperty = newProperties.find(finder) }
+
+		columnProperty?.name ?: column.name
 	}
 
 	protected boolean isDateType(Type type) {
@@ -523,7 +539,41 @@ class GrailsEntityPOJOClass extends EntityPOJOClass {
 		mapping.append renderId()
 		mapping.append renderVersion()
 		mapping.append renderTable()
+		mapping.append renderColumnMapping()
+
 		mapping.length() ? "\tstatic mapping = {$newline$mapping\t}" : ''
+	}
+
+	String renderColumnMapping() {
+		def mapping = new StringBuilder()
+
+		def appender = { Property property, Closure appendCondition ->
+			Column column = property.columnIterator.next()
+			if (appendCondition(property, column))
+				mapping.append("\t\t${property.name} column:'${column.name}'\n".toString())
+			mapping.append renderWhenForeignKeyIsAlsoAPrimaryKey(column, property)
+		}
+
+		def properName = { String columnName ->
+			Introspector.decapitalize( ReverseEngineeringStrategyUtil.toUpperCamelCase(columnName) )
+		}
+
+		getAllPropertiesIterator().each { Property property ->
+			appender(property, {p, c -> p.name != properName(c.name)})
+		}
+
+		newProperties.each { Property property ->
+			appender(property, {p, c -> p.name + 'Id' != properName(c.name)})
+		}
+
+		mapping.toString()
+	}
+
+	String renderWhenForeignKeyIsAlsoAPrimaryKey(Column column, Property property) {
+		def identityColumn = getIdentifierProperty().columnIterator.next()
+		if (column == identityColumn && property != getIdentifierProperty())
+			return "\t\t${property.name} insertable:false, updateable:false\n".toString()
+		return ''
 	}
 
 	String renderClassStart() {
