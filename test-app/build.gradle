@@ -1,0 +1,26 @@
+buildscript {
+	ext {
+		grailsVersion = project.grailsVersion
+	}
+	repositories {
+		mavenLocal()
+		maven { url 'https://repo.grails.org/grails/core' }
+	}
+	dependencies {
+		classpath "org.grails:grails-gradle-plugin:$grailsVersion"
+		classpath 'org.grails.plugins:db-reverse-engineer:4.0.0'
+		classpath 'org.grails.plugins:hibernate:4.3.10.7'
+	}
+}
+
+plugins {
+	id 'io.spring.dependency-management' version '0.5.4.RELEASE'
+}
+
+apply plugin: 'spring-boot'
+apply from: '../gradle/testapp.gradle'
+
+dependencies {
+	compile 'org.grails.plugins:hibernate'
+   runtime 'mysql:mysql-connector-java:5.1.38'
+}

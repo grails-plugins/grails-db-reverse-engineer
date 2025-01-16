@@ -1,9 +1,0 @@
-h4. The first step is installing the plugin. Add a plugin dependency in BuildConfig.groovy:
-
-{code}
-plugins {
-   runtime ':db-reverse-engineer:3.0.0'
-}
-{code}
-
-There are no required initialization steps but there are some configuration options described in the [next section|guide:configuration].

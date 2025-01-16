@@ -1,0 +1,14 @@
+[[db-reverse-engineer]]
+== db-reverse-engineer
+
+.Purpose
+
+Reverse-engineers a database and creates domain classes. There are too many configuration options to support a command line API, so everything is configured in `grails-app/conf/application.groovy`. These options are documented in the main plugin docs.
+
+Note that running the command like a typical Grails command (i.e. `grails db-reverse-engineer`) will fail due to a bug when parsing the `grails.factories` file in the plugin jar's `META-INF` folder. This is not a problem however since the simple workaround is to run it as a Gradle task as seen in the example.
+
+.Example
+
+....
+$ ./gradlew dbReverseEngineer
+....

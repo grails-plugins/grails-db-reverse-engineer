@@ -1,9 +1,0 @@
-h1. db-reverse-engineer
-
-h2. Purpose
-
-Reverse-engineers a database and creates domain classes. There are too many configuration options to support a command line API, so everything is configured in @grails-app/conf/Config.groovy@. These options are documented in the main plugin docs.
-
-bc.
-   grails db-reverse-engineer
-
