@@ -1,36 +1,39 @@
 buildscript {
-	ext {
-		grailsVersion = project.grailsVersion
-	}
 	repositories {
-		mavenLocal()
-		maven { url 'https://repo.grails.org/grails/core' }
-		jcenter()
+		maven { url "https://repo.grails.org/grails/core/" }
 	}
 	dependencies {
-		classpath "org.grails:grails-gradle-plugin:$grailsVersion"
-		classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.2'
-		classpath 'org.asciidoctor:asciidoctorj-epub3:1.5.0-alpha.4'
-		classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.9'
+		classpath platform("org.grails:grails-bom:${grailsVersion}")
+		classpath "org.grails:grails-gradle-plugin"
+		classpath "com.adarshr.test-logger:com.adarshr.test-logger.gradle.plugin:4.0.0"
 	}
 }
 
-plugins {
-	id 'io.spring.dependency-management'
-	id 'com.jfrog.bintray' version '1.2'
-}
-
-apply from: 'gradle/plugin.gradle'
-
-dependencies {
-
-	provided 'org.grails:grails-core'
-
-	compile 'org.hibernate:hibernate-tools:4.3.1.Final', {
-		['ant', 'common', 'freemarker', 'org.eclipse.jdt.core', 'runtime', 'text'].each { exclude module: it }
+allprojects {
+	repositories {
+		maven { url "https://repo.grails.org/grails/core" }
 	}
-
-	compile 'org.freemarker:freemarker:2.3.23'
-
-	compile 'org.hibernate:hibernate-core:4.3.10.Final'
 }
+
+version project.projectVersion
+group "org.grails.plugins"
+
+subprojects {
+	version project.projectVersion
+	group "org.grails.plugins"
+
+	if (project.name == 'grails-db-reverse-engineer') {
+		apply plugin: "org.grails.grails-publish"
+		grailsPublish {
+			githubSlug = 'grails-plugins/grails-db-reverse-engineer'
+			license {
+				name = 'Apache-2.0'
+			}
+			title = 'DB Reverse Engineering Plugin'
+			desc = 'Given a database, this plugin generates Grails domain classes from it.'
+			developers = [burtbeckwith: "Burt Beckwith"]
+		}
+	}
+}
+
+apply from: rootProject.file("gradle/docs.gradle")

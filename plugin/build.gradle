@@ -1,0 +1,41 @@
+buildscript {
+    repositories {
+        maven { url "https://repo.grails.org/grails/core/" }
+    }
+    dependencies {
+        classpath platform("org.grails:grails-bom:${grailsVersion}")
+        classpath "org.grails:grails-gradle-plugin"
+    }
+}
+
+apply plugin: 'groovy'
+apply plugin: 'java-library'
+apply plugin: 'org.grails.grails-plugin'
+
+project.compileJava.options.release = 17
+
+dependencies {
+
+    implementation platform("org.grails:grails-bom:${grailsVersion}")
+
+    compileOnly "jakarta.servlet:jakarta.servlet-api"
+    compileOnly 'org.grails:grails-dependencies'
+    compileOnly 'org.grails:grails-web-boot'
+    compileOnly 'org.springframework.boot:spring-boot-starter-logging'
+    compileOnly 'org.grails:grails-core'
+    compileOnly "org.hibernate:hibernate-core:${hibernateVersion}"
+
+    api "org.hibernate:hibernate-tools:${hibernateVersion}", {
+//        exclude module: 'ant'
+//        exclude module: 'common'
+//        exclude module: 'freemarker'
+//        exclude module: 'org.eclipse.jdt.core'
+//        exclude module: 'runtime'
+//        exclude module: 'text'
+    }
+
+    testImplementation("org.grails:grails-gorm-testing-support")
+    testImplementation("org.grails:grails-web-testing-support")
+}
+
+apply from: rootProject.layout.projectDirectory.file('gradle/test-config.gradle')

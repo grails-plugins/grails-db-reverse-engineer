@@ -1,1 +1,8 @@
-rootProject.name = 'db-reverse-engineer'
+rootProject.name = 'grails-db-reverse-engineer-root'
+
+include 'plugin'
+findProject(':plugin').name = 'grails-db-reverse-engineer'
+
+include 'docs'
+
+// examples must be loaded as separate projects due to the way grails commands need resolvable on the gradle classpath
