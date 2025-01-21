@@ -1,0 +1,32 @@
+import org.asciidoctor.gradle.jvm.AsciidoctorTask
+
+plugins {
+    id 'org.asciidoctor.jvm.convert' version "4.0.3"
+}
+
+def asciidoctorAttributes = [
+        'source-highlighter': 'coderay',
+        toc                 : 'left',
+        toclevels           : '2',
+        'toc-title'         : 'Table of Contents',
+        icons               : 'font',
+        id                  : project.name + ':' + project.version,
+        idprefix            : '',
+        idseparator         : '-',
+        version             : project.version,
+        'project-version'   : project.version,
+        sourcedir           : "${rootProject.allprojects.find { it.name == 'grails-db-reverse-engineer' }.projectDir}/src/main/groovy",
+]
+
+tasks.named('asciidoctor', AsciidoctorTask) { AsciidoctorTask it ->
+    it.jvm {
+        jvmArgs("--add-opens", "java.base/sun.nio.ch=ALL-UNNAMED", "--add-opens", "java.base/java.io=ALL-UNNAMED")
+    }
+
+    it.baseDirFollowsSourceDir()
+    it.sourceDir project.file('src/docs')
+    it.sources { include 'index.adoc' }
+    it.outputDir = project.buildDir.toPath().resolve('docs').toFile()
+    it.options doctype: 'book'
+    it.attributes asciidoctorAttributes
+}

@@ -1,0 +1,87 @@
+buildscript {
+	repositories {
+		maven { url "https://repo.grails.org/grails/core" }
+	}
+	dependencies {
+		classpath platform("org.grails:grails-bom:${grailsVersion}")
+		classpath "org.grails:grails-gradle-plugin"
+		classpath "com.adarshr.test-logger:com.adarshr.test-logger.gradle.plugin:4.0.0"
+		// TODO: can't put this on the classpath due to groovy 4 (the build/grails) vs 3 (gradle)
+		// classpath "org.grails.plugins:grails-db-reverse-engineer" // so the grails command is findable
+		// only needed if we want to extract the ddl
+		// classpath "org.grails.plugins:hibernate5"
+	}
+}
+
+plugins {
+	id "groovy"
+	id "war"
+	id "idea"
+	id "application"
+}
+
+repositories {
+	maven { url "https://repo.grails.org/grails/core" }
+}
+
+apply plugin: "org.grails.grails-web"
+
+version projectVersion
+group "com.reveng.test"
+
+project.compileJava.options.release = 17
+
+dependencies {
+	profile "org.grails.profiles:web"
+
+	implementation platform("org.grails:grails-bom:$grailsVersion")
+	implementation "org.grails:grails-core"
+	implementation "org.grails:grails-logging"
+	implementation "org.grails:grails-plugin-databinding"
+	implementation "org.grails:grails-plugin-i18n"
+	implementation "org.grails:grails-plugin-interceptors"
+	implementation "org.grails:grails-plugin-rest"
+	implementation "org.grails:grails-plugin-services"
+	implementation "org.grails:grails-plugin-url-mappings"
+	implementation "org.grails:grails-web-boot"
+	implementation "org.grails.plugins:gsp"
+	implementation "org.grails.plugins:hibernate5"
+	implementation "org.grails.plugins:scaffolding"
+	implementation "org.springframework.boot:spring-boot-autoconfigure"
+	implementation "org.springframework.boot:spring-boot-starter"
+	implementation "org.springframework.boot:spring-boot-starter-actuator"
+	implementation "org.springframework.boot:spring-boot-starter-logging"
+	implementation "org.springframework.boot:spring-boot-starter-tomcat"
+	implementation "org.springframework.boot:spring-boot-starter-validation"
+	console "org.grails:grails-console"
+	runtimeOnly "com.bertramlabs.plugins:asset-pipeline-grails"
+	runtimeOnly "org.apache.tomcat:tomcat-jdbc"
+	runtimeOnly "org.fusesource.jansi:jansi"
+	integrationTestImplementation testFixtures("org.grails.plugins:geb")
+	testImplementation "org.grails:grails-gorm-testing-support"
+	testImplementation "org.grails:grails-web-testing-support"
+	testImplementation "org.spockframework:spock-core"
+	testImplementation "org.testcontainers:spock"
+	testImplementation "org.testcontainers:testcontainers"
+
+	implementation "org.testcontainers:mysql"
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	implementation 'org.grails.plugins:grails-db-reverse-engineer'
+}
+
+apply from: rootProject.layout.projectDirectory.file('../../gradle/test-config.gradle')
+
+gradle.taskGraph.whenReady { taskGraph ->
+	if (taskGraph.allTasks.any { it.name == 'bootRun' }) {
+		logger.lifecycle("Removing generated domain classes since `bootRun` is being executed.")
+		def domains = project.layout.projectDirectory.dir('grails-app/domain').asFile
+		if(domains.exists()) {
+			domains.deleteDir()
+		}
+	}
+}
+
+//bootRun {
+//	jvmArgs = ['-Xdebug', '-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005']
+//}
