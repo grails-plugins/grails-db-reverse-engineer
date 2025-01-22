@@ -5,3 +5,4 @@ The DB Reverse Engineering plugin reads database table information using JDBC an
 
 The plugin uses the [Hibernate Tools](http://hibernate.org/tools/) library, with custom code to generate GORM domain classes instead of Java POJOs.
 
+[Documentation available here](https://grails-plugins.github.io/grails-db-reverse-engineer/).
